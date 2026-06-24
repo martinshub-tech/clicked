@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import type { IRouter } from 'express';
-import { and, count, desc, eq, lt, sql, ne } from 'drizzle-orm';
+import { asc, and, count, desc, eq, lt, sql, ne } from 'drizzle-orm';
 import { db } from '../db/index.js';
 import { conversationMembers, conversations, messages, tokenTransfers } from '../db/schema.js';
 import { requireAuth, type AuthRequest } from '../middleware/auth.js';
@@ -8,6 +8,7 @@ import { redis, CONV_CACHE_TTL, convCacheKey } from '../lib/redis.js';
 import { invalidateConversationCaches } from '../lib/conversationCache.js';
 import { serializeMessage } from '../lib/messages.js';
 import { getSocketServer } from '../lib/socket.js';
+import { MAX_MESSAGES_LIMIT, DEFAULT_MESSAGES_LIMIT } from '../constants.js';
 
 export const conversationsRouter: IRouter = Router();
 
@@ -419,9 +420,6 @@ conversationsRouter.patch('/:id', async (req: AuthRequest, res) => {
 // #14 — GET /conversations/:id/messages
 // Cursor-based pagination via ?before=<messageId>&limit=<n> (max 50).
 // Returns messages in ascending order with a `nextCursor` field.
-const MAX_MESSAGES_LIMIT = 50;
-const DEFAULT_MESSAGES_LIMIT = 30;
-
 conversationsRouter.get('/:id/messages', async (req: AuthRequest, res) => {
   const userId = req.auth!.userId;
   const conversationId = req.params['id'] as string | undefined;
