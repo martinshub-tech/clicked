@@ -11,6 +11,7 @@ const JWT_SECRET: string = SECRET;
 export interface JwtPayload {
   userId: string;
   walletAddress: string;
+  deviceId?: string;
 }
 
 export function signToken(payload: JwtPayload): string {
