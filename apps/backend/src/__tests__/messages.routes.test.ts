@@ -41,7 +41,7 @@ vi.mock('../db/schema.js', () => ({
     id: 'id',
     conversationId: 'conversationId',
     senderId: 'senderId',
-    content: 'content',
+    ciphertext: 'ciphertext',
     createdAt: 'createdAt',
     deletedAt: 'deletedAt',
   },
@@ -83,7 +83,7 @@ describe('DELETE /messages/:id', () => {
       id: 'msg-1',
       conversationId: 'conv-1',
       senderId: 'user-2',
-      content: 'hello',
+      ciphertext: 'hello',
       deletedAt: null,
     });
 
@@ -98,7 +98,7 @@ describe('DELETE /messages/:id', () => {
       id: 'msg-1',
       conversationId: 'conv-1',
       senderId: 'user-1',
-      content: 'hello',
+      ciphertext: 'hello',
       deletedAt: null,
     });
 

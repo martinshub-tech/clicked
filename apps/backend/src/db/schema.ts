@@ -67,16 +67,10 @@ export const messages = pgTable(
     senderId: uuid('sender_id')
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
-    content: text('content').notNull(),
+    ciphertext: text('ciphertext'),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     deletedAt: timestamp('deleted_at'),
-  },
-  (table) => [
-    index('messages_content_search_idx').using(
-      'gin',
-      sql`to_tsvector('english', ${table.content})`,
-    ),
-  ],
+  }
 );
 
 // ─── Devices & prekeys (issues #158, #159, #162) ─────────────────────────────

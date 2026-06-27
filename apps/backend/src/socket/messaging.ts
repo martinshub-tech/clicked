@@ -35,13 +35,13 @@ export function registerMessagingHandlers(io: Server, socket: AuthSocket): void 
   });
 
   // ── send_message ───────────────────────────────────────────────────────────
-  // Payload: { conversationId: string; content: string }
+  // Payload: { conversationId: string; ciphertext: string }
   // Persists the message and broadcasts it to all room members.
-  socket.on('send_message', async (payload: { conversationId: string; content: string }) => {
-    const { conversationId, content } = payload;
+  socket.on('send_message', async (payload: { conversationId: string; ciphertext: string }) => {
+    const { conversationId, ciphertext } = payload;
 
-    if (!content?.trim()) {
-      socket.emit('error', { event: 'send_message', message: 'Content must not be empty' });
+    if (!ciphertext?.trim()) {
+      socket.emit('error', { event: 'send_message', message: 'Ciphertext must not be empty' });
       return;
     }
 
@@ -59,7 +59,7 @@ export function registerMessagingHandlers(io: Server, socket: AuthSocket): void 
 
     const [message] = await db
       .insert(messages)
-      .values({ conversationId, senderId: userId, content: content.trim() })
+      .values({ conversationId, senderId: userId, ciphertext: ciphertext.trim() })
       .returning();
 
     io.to(conversationId).emit('new_message', message);
@@ -238,15 +238,15 @@ export function registerMessagingHandlers(io: Server, socket: AuthSocket): void 
   });
 
   // ── ask_assistant ──────────────────────────────────────────────────────────
-  // Payload: { conversationId: string; content: string }
+  // Payload: { conversationId: string; ciphertext: string }
   // Forwards to AI agent and posts reply from reserved assistant user.
   // Rate-limit: 5 requests per user per minute.
   const ASSISTANT_USER_ID = '00000000-0000-4000-8000-000000000000';
 
-  socket.on('ask_assistant', async (payload: { conversationId: string; content: string }) => {
-    const { conversationId, content } = payload;
+  socket.on('ask_assistant', async (payload: { conversationId: string; ciphertext: string }) => {
+    const { conversationId, ciphertext } = payload;
 
-    if (!content?.trim().startsWith('@assistant')) {
+    if (!ciphertext?.trim().startsWith('@assistant')) {
       return;
     }
 
@@ -284,7 +284,7 @@ export function registerMessagingHandlers(io: Server, socket: AuthSocket): void 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          message: content,
+          message: ciphertext,
           conversation_id: conversationId,
         }),
       });
@@ -317,7 +317,7 @@ export function registerMessagingHandlers(io: Server, socket: AuthSocket): void 
         .values({
           conversationId,
           senderId: ASSISTANT_USER_ID,
-          content: data.reply,
+          ciphertext: data.reply,
         })
         .returning();
 

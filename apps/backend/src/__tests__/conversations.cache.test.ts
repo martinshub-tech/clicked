@@ -62,7 +62,7 @@ vi.mock('../db/schema.js', () => ({
     id: 'id',
     conversationId: 'conversationId',
     senderId: 'senderId',
-    content: 'content',
+    ciphertext: 'ciphertext',
     createdAt: 'createdAt',
     deletedAt: 'deletedAt',
   },
@@ -189,50 +189,7 @@ describe('GET /conversations — Redis caching', () => {
   });
 });
 
-describe('GET /conversations/:id/search', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    mockRedisInstance = { get: mockGet, setex: mockSetex, del: mockDel };
-  });
 
-  it('returns 400 when the query is empty', async () => {
-    const res = await request(makeApp()).get('/conversations/conv-1/search?q=   ');
-
-    expect(res.status).toBe(400);
-    expect(mockFindFirst).not.toHaveBeenCalled();
-    expect(mockExecute).not.toHaveBeenCalled();
-  });
-
-  it('returns 403 when the user is not a conversation member', async () => {
-    mockFindFirst.mockResolvedValue(undefined);
-
-    const res = await request(makeApp()).get('/conversations/conv-1/search?q=hello');
-
-    expect(res.status).toBe(403);
-    expect(mockExecute).not.toHaveBeenCalled();
-  });
-
-  it('returns ranked highlighted matches for conversation members', async () => {
-    const searchResults = [
-      {
-        id: 'msg-1',
-        conversationId: 'conv-1',
-        senderId: TEST_USER_ID,
-        content: 'hello from stellar',
-        snippet: '<mark>hello</mark> from stellar',
-        rank: '0.1',
-      },
-    ];
-    mockFindFirst.mockResolvedValue({ id: 'member-1' });
-    mockExecute.mockResolvedValue(searchResults);
-
-    const res = await request(makeApp()).get('/conversations/conv-1/search?q=hello');
-
-    expect(res.status).toBe(200);
-    expect(res.body).toEqual({ results: searchResults });
-    expect(mockExecute).toHaveBeenCalledTimes(1);
-  });
-});
 
 describe('GET /conversations — isArchived filter', () => {
   beforeEach(() => {

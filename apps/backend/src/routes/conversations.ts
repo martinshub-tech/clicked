@@ -485,68 +485,7 @@ conversationsRouter.get('/:id/messages', async (req: AuthRequest, res) => {
   res.json({ messages: page, nextCursor });
 });
 
-conversationsRouter.get('/:id/search', async (req: AuthRequest, res) => {
-  const userId = req.auth!.userId;
-  const conversationId = req.params['id'] as string | undefined;
-  const query = typeof req.query.q === 'string' ? req.query.q.trim() : '';
 
-  if (!conversationId) {
-    res.status(400).json({ error: 'Conversation id is required' });
-    return;
-  }
-
-  if (!query) {
-    res.status(400).json({ error: 'Search query is required' });
-    return;
-  }
-
-  const membership = await db.query.conversationMembers.findFirst({
-    where: and(
-      eq(conversationMembers.conversationId, conversationId),
-      eq(conversationMembers.userId, userId),
-    ),
-  });
-
-  if (!membership) {
-    res.status(403).json({ error: 'Not a member of this conversation' });
-    return;
-  }
-
-  const results = await db.execute<{
-    id: string;
-    conversationId: string;
-    senderId: string;
-    content: string;
-    createdAt: Date;
-    snippet: string;
-    rank: string;
-  }>(sql`
-    WITH search_query AS (
-      SELECT websearch_to_tsquery('english', ${query}) AS query
-    )
-    SELECT
-      ${messages.id} AS "id",
-      ${messages.conversationId} AS "conversationId",
-      ${messages.senderId} AS "senderId",
-      ${messages.content} AS "content",
-      ${messages.createdAt} AS "createdAt",
-      ts_headline(
-        'english',
-        ${messages.content},
-        search_query.query,
-        'StartSel=<mark>, StopSel=</mark>, MaxWords=24, MinWords=8, ShortWord=3, HighlightAll=false'
-      ) AS "snippet",
-      ts_rank_cd(to_tsvector('english', ${messages.content}), search_query.query) AS "rank"
-    FROM ${messages}, search_query
-    WHERE ${messages.conversationId} = ${conversationId}
-      AND ${messages.deletedAt} IS NULL
-      AND search_query.query @@ to_tsvector('english', ${messages.content})
-    ORDER BY "rank" DESC, ${messages.createdAt} DESC
-    LIMIT ${SEARCH_RESULT_LIMIT}
-  `);
-
-  res.json({ results });
-});
 
 // PATCH /conversations/:id/settings — update muted/archived state for the authenticated user
 conversationsRouter.patch('/:id/settings', async (req: AuthRequest, res) => {

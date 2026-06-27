@@ -54,7 +54,7 @@ vi.mock('../db/schema.js', () => ({
     id: 'id',
     conversationId: 'conversationId',
     senderId: 'senderId',
-    content: 'content',
+    ciphertext: 'ciphertext',
     createdAt: 'createdAt',
     deletedAt: 'deletedAt',
   },
@@ -138,7 +138,7 @@ describe('GET /conversations/:id', () => {
           id: 'msg-1',
           conversationId: 'conv-1',
           senderId: 'user-1',
-          content: 'hello',
+          ciphertext: 'hello',
           deletedAt: null,
           sender: {
             id: 'user-1',
@@ -157,7 +157,7 @@ describe('GET /conversations/:id', () => {
     expect(res.status).toBe(200);
     expect(res.body.id).toBe('conv-1');
     expect(res.body.messages).toHaveLength(1);
-    expect(res.body.messages[0].content).toBe('hello');
+    expect(res.body.messages[0].ciphertext).toBe('hello');
   });
 });
 
