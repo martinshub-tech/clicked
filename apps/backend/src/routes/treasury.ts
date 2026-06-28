@@ -3,7 +3,6 @@ import { z } from 'zod';
 import { requireAuth, type AuthRequest } from '../middleware/auth.js';
 import { validate } from '../middleware/validate.js';
 
-
 export const treasuryRouter: IRouter = Router();
 
 treasuryRouter.use(requireAuth);

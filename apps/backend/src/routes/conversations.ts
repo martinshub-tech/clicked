@@ -20,7 +20,6 @@ export const conversationsRouter: IRouter = Router();
 
 conversationsRouter.use(requireAuth);
 
-
 const getConversationRelations = (deviceId: string) => ({
   members: {
     with: {
