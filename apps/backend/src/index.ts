@@ -101,6 +101,11 @@ io.on('connection', async (socket: AuthSocket) => {
     next();
   });
 
+  // Join a device-scoped room so the delivery pipeline can push envelopes to
+  // exactly this device, even across horizontally-scaled instances via the
+  // Redis adapter.
+  await socket.join(`device:${deviceId}`);
+
   // Auto-join all conversation rooms so the socket receives new_message events
   // for every conversation the user belongs to (needed for unread badge tracking).
   const memberships = await db.query.conversationMembers.findMany({
