@@ -189,8 +189,6 @@ describe('GET /conversations — Redis caching', () => {
   });
 });
 
-
-
 describe('GET /conversations — isArchived filter', () => {
   beforeEach(() => {
     vi.clearAllMocks();

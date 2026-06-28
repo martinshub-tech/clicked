@@ -14,8 +14,6 @@ export const conversationsRouter: IRouter = Router();
 
 conversationsRouter.use(requireAuth);
 
-const SEARCH_RESULT_LIMIT = 20;
-
 const conversationRelations = {
   members: {
     with: {
@@ -484,8 +482,6 @@ conversationsRouter.get('/:id/messages', async (req: AuthRequest, res) => {
 
   res.json({ messages: page, nextCursor });
 });
-
-
 
 // PATCH /conversations/:id/settings — update muted/archived state for the authenticated user
 conversationsRouter.patch('/:id/settings', async (req: AuthRequest, res) => {

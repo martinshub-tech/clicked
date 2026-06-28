@@ -70,7 +70,7 @@ export const messages = pgTable(
     ciphertext: text('ciphertext'),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     deletedAt: timestamp('deleted_at'),
-  }
+  },
 );
 
 // ─── Devices & prekeys (issues #158, #159, #162) ─────────────────────────────
