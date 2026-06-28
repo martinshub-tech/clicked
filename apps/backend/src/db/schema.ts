@@ -42,7 +42,14 @@ export const conversations = pgTable('conversations', {
   createdAt: timestamp('created_at').notNull().defaultNow(),
 });
 
-export const contentTypeEnum = pgEnum('content_type', ['text', 'file', 'image', 'video', 'audio', 'system']);
+export const contentTypeEnum = pgEnum('content_type', [
+  'text',
+  'file',
+  'image',
+  'video',
+  'audio',
+  'system',
+]);
 
 export const conversationMembers = pgTable('conversation_members', {
   id: uuid('id').primaryKey().defaultRandom(),
