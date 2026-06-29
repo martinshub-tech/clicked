@@ -104,7 +104,7 @@ conversationsRouter.get('/', async (req: AuthRequest, res) => {
       eq(conversationMembers.userId, userId),
       showArchived ? undefined : ne(conversationMembers.isArchived, true),
     ),
-        with: {
+    with: {
       conversation: getConversationRelations(req.auth!.deviceId) as never,
     },
   })) as unknown as Array<{
@@ -113,7 +113,6 @@ conversationsRouter.get('/', async (req: AuthRequest, res) => {
     isArchived: boolean;
     conversation: ConversationPayload;
   }>;
-
 
   // Single subquery for message counts — no N+1
   const conversationIds = memberships.map((m) => m.conversationId);
