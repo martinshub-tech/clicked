@@ -58,7 +58,10 @@ export async function runHardDeletePass(): Promise<void> {
 
     try {
       await s3.send(new DeleteObjectCommand({ Bucket: BUCKET, Key: file.storageKey }));
-      await db.update(files).set({ hardDeletedAt: new Date() }).where(sql`${files.id} = ${file.id}`);
+      await db
+        .update(files)
+        .set({ hardDeletedAt: new Date() })
+        .where(sql`${files.id} = ${file.id}`);
       console.log(`[file-cleanup] hard-deleted s3://${BUCKET}/${file.storageKey}`);
     } catch (err) {
       console.error(`[file-cleanup] failed to delete ${file.storageKey}:`, err);
