@@ -162,9 +162,7 @@ describe('deliverMessage', () => {
   it('only emits new_message to room when no active devices exist', async () => {
     const members = [{ userId: 'user-b' }];
 
-    mockWhere
-      .mockResolvedValueOnce(members)
-      .mockResolvedValueOnce([]); // no active devices
+    mockWhere.mockResolvedValueOnce(members).mockResolvedValueOnce([]); // no active devices
 
     const io = makeIo();
     const { deliverMessage } = await import('../services/deliveryPipeline.js');
